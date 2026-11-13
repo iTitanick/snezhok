@@ -1,0 +1,308 @@
+<Window x:Class="SnowDesktop.UI.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Snezhok — Настройки"
+        Icon="pack://application:,,,/Assets/snezhok.ico"
+        Width="680"
+        MaxHeight="760"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#101826"
+        Foreground="#EEF5FF"
+        FontFamily="Segoe UI">
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="SectionTitleStyle">
+            <Setter Property="Foreground" Value="#8DC8FF"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="Foreground" Value="#DCE9FA"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ValueStyle">
+            <Setter Property="Foreground" Value="#8DC8FF"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#E3EEFC"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Margin" Value="0,3.5,0,3.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.48"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Button" x:Key="ActionButtonStyle">
+            <Setter Property="Background" Value="#1E3350"/>
+            <Setter Property="Foreground" Value="#F0F6FF"/>
+            <Setter Property="BorderBrush" Value="#32537D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,7"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2A476E"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#182A42"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button" x:Key="PresetPillStyle" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Padding" Value="11,5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#101826">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="20,14,20,10" BorderBrush="#1C2C42" BorderThickness="0,0,0,1">
+            <Grid>
+                <TextBlock Text="Настройки Snezhok"
+                           FontSize="17"
+                           FontWeight="SemiBold"
+                           Foreground="#FFFFFF"
+                           VerticalAlignment="Center"/>
+                <TextBlock x:Name="ActivePresetBadge"
+                           Text="Снежный вечер"
+                           Foreground="#8DC8FF"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Scrollable Body -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,12,20,10">
+            <StackPanel>
+                <!-- Preset Strip -->
+                <TextBlock Text="ПРЕСЕТ АТМОСФЕРЫ" Style="{StaticResource SectionTitleStyle}"/>
+                <WrapPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <Button x:Name="PresetQuietBtn" Content="Тихая ночь" Style="{StaticResource PresetPillStyle}" Click="OnPresetQuietClick"/>
+                    <Button x:Name="PresetEveningBtn" Content="Снежный вечер" Style="{StaticResource PresetPillStyle}" Click="OnPresetEveningClick"/>
+                    <Button x:Name="PresetBlizzardBtn" Content="Метель" Style="{StaticResource PresetPillStyle}" Click="OnPresetBlizzardClick"/>
+                    <Button x:Name="PresetPlaygroundBtn" Content="Зимний двор" Style="{StaticResource PresetPillStyle}" Click="OnPresetPlaygroundClick" Margin="0"/>
+                </WrapPanel>
+
+                <!-- Two-column Sliders -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="22"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Column: Snowfall -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="СНЕГОПАД" Style="{StaticResource SectionTitleStyle}"/>
+
+                        <Grid Margin="0,2,0,2">
+                            <TextBlock Text="Количество снежинок" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="CountValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="CountSlider" Minimum="20" Maximum="800" TickFrequency="10" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged" Margin="0,0,0,7"/>
+
+                        <Grid Margin="0,2,0,2">
+                            <TextBlock Text="Скорость падения" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="SpeedValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="SpeedSlider" Minimum="0.3" Maximum="2.5" TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged" Margin="0,0,0,7"/>
+
+                        <Grid Margin="0,2,0,2">
+                            <TextBlock Text="Ветер (влево / вправо)" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="WindValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="WindSlider" Minimum="-1.5" Maximum="1.5" TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged" Margin="0,0,0,7"/>
+
+                        <Grid Margin="0,2,0,2">
+                            <TextBlock Text="Метель (порывы и вихри)" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="BlizzardValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="BlizzardSlider" Minimum="0.0" Maximum="2.0" TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged" Margin="0,0,0,4"/>
+                    </StackPanel>
+
+                    <!-- Right Column: Drifts & Snowman -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="СУГРОБЫ И СНЕГОВИКИ" Style="{StaticResource SectionTitleStyle}"/>
+
+                        <Grid Margin="0,2,0,2">
+                            <TextBlock Text="Макс. высота сугробов" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="MaxDriftValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="MaxDriftSlider" Minimum="6" Maximum="60" TickFrequency="2" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged" Margin="0,0,0,7"/>
+
+                        <Grid Margin="0,2,0,2">
+                            <TextBlock Text="Скорость накопления" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="AccumRateValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="AccumRateSlider" Minimum="0.2" Maximum="3.5" TickFrequency="0.1" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged" Margin="0,0,0,7"/>
+
+                        <Grid Margin="0,2,0,2">
+                            <TextBlock Text="Скорость таяния" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="MeltRateValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="MeltRateSlider" Minimum="0.0" Maximum="1.0" TickFrequency="0.02" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged" Margin="0,0,0,7"/>
+
+                        <Grid Margin="0,2,0,2">
+                            <TextBlock Text="Размер снеговика" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="SnowmanScaleValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="SnowmanScaleSlider" Minimum="0.6" Maximum="2.0" TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged" Margin="0,0,0,4"/>
+                    </StackPanel>
+                </Grid>
+
+                <Border Height="1" Background="#20314A" Margin="0,10,0,10"/>
+
+                <!-- Two-column Checkboxes -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="22"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <CheckBox x:Name="WindowsCheck" Content="Скапливаться на верхних гранях окон"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="TaskbarCheck" Content="Скапливаться на панели задач снизу"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="MouseInteractionCheck" Content="Сдвигать сугробы курсором мыши"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="FrostTrailCheck" Content="Морозный след за курсором"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="GarlandCheck" Content="Новогодняя гирлянда сверху экрана"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <CheckBox x:Name="SnowplowCheck" Content="Паровозик-снегоуборщик на панели задач"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="TrainSantaWagonCheck" Content="Вагончик: Дед Мороз и Снегурочка"
+                                  Margin="20,1,0,2"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="TrainTreeWagonCheck" Content="Вагончик: ёлочка и подарки"
+                                  Margin="20,1,0,4"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="SnowmanAnimCheck" Content="Живые анимации и броски снеговиков"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="SoundCheck" Content="Звуковые эффекты (поезд и снежки)"
+                                  Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
+                        <CheckBox x:Name="AutostartCheck" Content="Запускать вместе с Windows"
+                                  Checked="OnAutostartChanged" Unchecked="OnAutostartChanged"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Snowplow Interval + Sound Volume -->
+                <Grid Margin="0,8,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="22"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <Grid Margin="0,0,0,2">
+                            <TextBlock Text="Интервал выезда паровозика" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="SnowplowIntervalValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="SnowplowIntervalSlider" Minimum="20" Maximum="180" TickFrequency="10" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <Grid Margin="0,0,0,2">
+                            <TextBlock Text="Громкость звуков" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="SoundVolumeValueText" Style="{StaticResource ValueStyle}"/>
+                        </Grid>
+                        <Slider x:Name="SoundVolumeSlider" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                                ValueChanged="OnSliderChanged"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Modifier Key for Snowballs -->
+                <Grid Margin="0,2,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Клавиша для лепки и перетаскивания (удерживать + ЛКМ)" Style="{StaticResource LabelStyle}"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <RadioButton x:Name="ModAltRadio" Content="Alt" GroupName="ModKey" Foreground="#E3EEFC" Margin="0,0,12,0" Checked="OnModifierChanged"/>
+                        <RadioButton x:Name="ModShiftRadio" Content="Shift" GroupName="ModKey" Foreground="#E3EEFC" Margin="0,0,12,0" Checked="OnModifierChanged"/>
+                        <RadioButton x:Name="ModCtrlRadio" Content="Ctrl" GroupName="ModKey" Foreground="#E3EEFC" Checked="OnModifierChanged"/>
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Text="F9 — игра одной ЛКМ без клавиш. Двойной клик по снеговику — сменить наряд, ПКМ по снеговику — убрать."
+                           Foreground="#8AA4C8" FontSize="11.5" TextWrapping="Wrap"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Pinned Action Bar -->
+        <Border Grid.Row="2" Padding="20,12,20,15" Background="#0D1420" BorderBrush="#1C2C42" BorderThickness="0,1,0,0">
+            <StackPanel>
+                <WrapPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <Button Content="Стряхнуть снег" Style="{StaticResource ActionButtonStyle}"
+                            Click="OnShakeClick" Margin="0,0,8,0"/>
+                    <Button Content="Паровозик!" Style="{StaticResource ActionButtonStyle}"
+                            Click="OnSnowplowClick" Margin="0,0,8,0"/>
+                    <Button Content="Поставить снеговика" Style="{StaticResource ActionButtonStyle}"
+                            Click="OnSpawnSnowmanClick" Margin="0,0,8,0"/>
+                    <Button Content="Убрать снеговиков" Style="{StaticResource ActionButtonStyle}"
+                            Click="OnClearSnowmenClick"/>
+                </WrapPanel>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="Сбросить настройки" Style="{StaticResource ActionButtonStyle}"
+                            Click="OnResetClick"/>
+                    <Button Grid.Column="2" Content="Скрыть в трей" Style="{StaticResource ActionButtonStyle}"
+                            Click="OnHideClick" Background="#285185" BorderBrush="#4077BA" Padding="18,7"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
